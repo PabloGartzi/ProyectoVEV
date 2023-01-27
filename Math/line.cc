@@ -23,8 +23,15 @@ Line & Line::operator=(const Line & line) {
 
 void Line::setFromAtoB(const Vector3 & A, const Vector3 & B) {
 	/* =================== PUT YOUR CODE HERE ====================== */
-
+	m_O = A; //Punto origen 
+	//A direction vector d.
+	m_d = B-A;
+	float mi_modulo = m_d.length();
+	if (mi_modulo < Constants::distance_epsilon) //Es necesario hacer esto antes de normalizar.
+		printf("Oye... estan muy cerca\n");
+	m_d.normalize();
 	/* =================== END YOUR CODE HERE ====================== */
+
 }
 
 // @@ TODO: Give the point corresponding to parameter u
@@ -32,9 +39,9 @@ void Line::setFromAtoB(const Vector3 & A, const Vector3 & B) {
 Vector3 Line::at(float u) const {
 	Vector3 res;
 	/* =================== PUT YOUR CODE HERE ====================== */
-
+	res= m_O+u*m_d;
 	/* =================== END YOUR CODE HERE ====================== */
-	return res;
+	return res; 
 }
 
 // @@ TODO: Calculate the parameter 'u0' of the line point nearest to P
@@ -44,7 +51,16 @@ Vector3 Line::at(float u) const {
 float Line::paramDistance(const Vector3 & P) const {
 	float res = 0.0f;
 	/* =================== PUT YOUR CODE HERE ====================== */
-
+	float DoD = m_d.dot(m_d);
+	if(DoD < Constants::distance_epsilon){
+		printf("Oye, que es 0\n");
+		return 0;
+	}
+	else{
+		float numerador = m_d.dot(P-m_O);
+		float denominador = m_d.dot(m_d);
+		return numerador / denominador;
+	}
 	/* =================== END YOUR CODE HERE ====================== */
 	return res;
 }
@@ -57,7 +73,9 @@ float Line::paramDistance(const Vector3 & P) const {
 float Line::distance(const Vector3 & P) const {
 	float res = 0.0f;
 	/* =================== PUT YOUR CODE HERE ====================== */
-
+	float u0 = paramDistance(P);
+	Vector3 mi_vector = P - this->at(u0);
+	res = mi_vector.length();
 	/* =================== END YOUR CODE HERE ====================== */
 	return res;
 }
