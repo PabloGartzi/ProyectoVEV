@@ -17,7 +17,20 @@
 
 int BSpherePlaneIntersect(const BSphere *bs, Plane *pl) {
 	/* =================== PUT YOUR CODE HERE ====================== */
-
+	float result=0;
+	float aux = pl->signedDistance(bs->m_centre);
+	result = fabs(aux);
+	if(result <= bs->m_radius){ // El plano y la esfera intersecan.
+		return IINTERSECT;
+	}
+	else{ //no intersecan, hay que ver si la esfera esta fuera o dentro.
+		if(pl->whichSide(bs->m_centre)==-1){
+			return -IREJECT;
+		}	
+		else{//El caso de que wichSide devuelva 0 nunca se dara
+			return +IREJECT;
+		}	
+	}
 	/* =================== END YOUR CODE HERE ====================== */
 }
 
@@ -29,7 +42,14 @@ int BSpherePlaneIntersect(const BSphere *bs, Plane *pl) {
 
 int  BBoxBBoxIntersect(const BBox *bba, const BBox *bbb ) {
 	/* =================== PUT YOUR CODE HERE ====================== */
-
+	if ((bba->m_min[0] > bbb->m_max[0] || bbb->m_min[0] > bba->m_max[0]) ||
+	(bba->m_min[1] > bbb->m_max[1] || bbb->m_min[1] > bba->m_max[1]) ||
+	(bba->m_min[2] > bbb->m_max[2] || bbb->m_min[2] > bba->m_max[2])){ //Si se verifica, no intersectan
+    	return IREJECT;
+	}
+  	else{
+		return IINTERSECT;
+	}
 	/* =================== END YOUR CODE HERE ====================== */
 }
 
@@ -41,7 +61,34 @@ int  BBoxBBoxIntersect(const BBox *bba, const BBox *bbb ) {
 
 int  BBoxPlaneIntersect (const BBox *theBBox, Plane *thePlane) {
 	/* =================== PUT YOUR CODE HERE ====================== */
-
+	int contador = 0;
+	Vector3 v;
+	for (i = 0; i <= 1; i++){
+		for (j = 0; j <= 1; j++){
+			for (k = 0; k <= 1; k++){
+				/*Si las variables i, j y k son 0 se coge el valor del minimo del bounding box.
+				Si son 1, se coge el valor maximo.
+				i-> eje x
+				j-> eje y
+				k-> eje z
+				De esta forma comprobamos los 8 vertices del bounding box.
+				*/
+				v[0] = i ? theBBox->m_min[0] : theBBox->m_max[0];
+				v[1] = j ? theBBox->m_min[1] : theBBox->m_max[1];
+				v[2] = k ? theBBox->m_min[2] : theBBox->m_max[2];
+				contador = contador += thePlane->whichSide(v);
+			}
+		}
+	}
+	if(contador==8){
+		return IREJECT;
+	}
+	else if (contador==-8){
+		return -IREJECT;
+	}
+	else{
+		return IINTERSECT;
+	}
 	/* =================== END YOUR CODE HERE ====================== */
 }
 
