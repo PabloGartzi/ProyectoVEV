@@ -63,20 +63,17 @@ int  BBoxPlaneIntersect (const BBox *theBBox, Plane *thePlane) {
 	/* =================== PUT YOUR CODE HERE ====================== */
 	int contador = 0;
 	Vector3 v;
-	for (i = 0; i <= 1; i++){
-		for (j = 0; j <= 1; j++){
-			for (k = 0; k <= 1; k++){
-				/*Si las variables i, j y k son 0 se coge el valor del minimo del bounding box.
-				Si son 1, se coge el valor maximo.
-				i-> eje x
-				j-> eje y
-				k-> eje z
+	for (int i = 0; i <= 1; i++){
+		for (int j = 0; j <= 1; j++){
+			for (int k = 0; k <= 1; k++){
+				/*Si las variables i, j y k son 0 se coge el valor del minimo del bounding box. Si son 1, se coge el valor maximo.
+				i-> eje x; j-> eje y; k-> eje z
 				De esta forma comprobamos los 8 vertices del bounding box.
 				*/
 				v[0] = i ? theBBox->m_min[0] : theBBox->m_max[0];
 				v[1] = j ? theBBox->m_min[1] : theBBox->m_max[1];
 				v[2] = k ? theBBox->m_min[2] : theBBox->m_max[2];
-				contador = contador += thePlane->whichSide(v);
+				contador = contador + thePlane->whichSide(v);
 			}
 		}
 	}
