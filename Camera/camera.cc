@@ -142,6 +142,15 @@ void OrthographicCamera::updateProjection() {
 
 void PerspectiveCamera::updateProjection() {
 	/* =================== PUT YOUR CODE HERE ====================== */
+	//Basicamente es aplicar las formulas
+	m_top = m_near*tan(m_fovy/2);
+	m_bottom = -m_top;
+	m_right = m_aspectRatio * m_top;
+	m_left = -m_right;
+	//Llamamos al set frustrum y le pasamos lo que hemos obtenido para actualizar la matriz de proyeccion de la camara.
+	m_projTrfm->setFrustum(m_left, m_right, m_bottom, m_top, m_near,  m_far);
+
+//mirar en trfm3d set frustrum
 
 	/* =================== END YOUR CODE HERE ====================== */
 	updateFrustumPlanes();

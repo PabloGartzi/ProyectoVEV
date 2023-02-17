@@ -278,9 +278,11 @@ void Node::addChild(Node *theChild) {
 		// node does not have gObject, so attach child
 		theChild->m_parent = this;
 		this->m_children.push_back(theChild);
+		updateGS();
 		/* =================== END YOUR CODE HERE ====================== */
-
 	}
+
+
 }
 
 void Node::detach() {
@@ -362,6 +364,19 @@ void Node::updateBB () {
 
 void Node::updateWC() {
 	/* =================== PUT YOUR CODE HERE ====================== */
+    if(m_parent==0){
+	this->m_placementWC->clone(m_placement);
+	}
+    // Actualizar los hijos recursivamente
+	else{
+		this->m_placementWC->clone(m_parent->m_placementWC);
+		this->m_placementWC->add(this->m_placement);
+		if (m_gObject == 0) { //Nodo Intermedio
+			for(auto & theChild : m_children){
+				theChild->updateWC();
+			}
+		}
+	}
 
 	/* =================== END YOUR CODE HERE ====================== */
 }
@@ -376,7 +391,7 @@ void Node::updateWC() {
 
 void Node::updateGS() {
 	/* =================== PUT YOUR CODE HERE ====================== */
-
+	updateWC();
 	/* =================== END YOUR CODE HERE ====================== */
 }
 
@@ -421,19 +436,19 @@ void Node::draw() {
 		BBoxGL::draw( m_containerWC);
 	}
 	/* =================== PUT YOUR CODE HERE ====================== */
-
-	rs->push(RenderState::modelview);
-	//T es la transformacion asociada al nodo
-	rs->addTrfm(RenderState::modelview, m_placement);
+	//Basicamente he hecho lo que se explico en clase en modo global
 	if(m_gObject != 0){// si el nodo tiene un objeto (m_gObject)
+		rs->push(RenderState::modelview);
+		rs->addTrfm(RenderState::modelview, m_placementWC);
 		m_gObject->draw();
+		rs->pop(RenderState::modelview); 
 	}
 	else{
 		for(auto n : m_children){
 			n->draw();
 		}
 	}
-	rs->pop(RenderState::modelview); 
+
 
 	/* =================== END YOUR CODE HERE ====================== */
 
