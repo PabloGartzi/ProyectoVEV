@@ -308,7 +308,10 @@ void Node::detach() {
 
 void Node::propagateBBRoot() {
 	/* =================== PUT YOUR CODE HERE ====================== */
-
+	this->updateBB();
+	if(m_parent !=0){
+		m_parent->propagateBBRoot();
+	}
 	/* =================== END YOUR CODE HERE ====================== */
 }
 
@@ -341,7 +344,17 @@ void Node::propagateBBRoot() {
 
 void Node::updateBB () {
 	/* =================== PUT YOUR CODE HERE ====================== */
-
+	// Si el nodo tiene objeto (es hoja)
+	if (m_gObject) {
+		m_containerWC->clone(m_gObject->getContainer());
+		m_containerWC->transform(m_placementWC);
+	}
+	else{// Iterar el resto de nodos
+		m_containerWC->init();
+		for (auto & theChild : m_children) {
+			m_containerWC->include(theChild->m_containerWC);
+		}
+	}
 	/* =================== END YOUR CODE HERE ====================== */
 }
 
@@ -371,12 +384,13 @@ void Node::updateWC() {
 	else{
 		this->m_placementWC->clone(m_parent->m_placementWC);
 		this->m_placementWC->add(this->m_placement);
-		if (m_gObject == 0) { //Nodo Intermedio
-			for(auto & theChild : m_children){
-				theChild->updateWC();
-			}
+	}
+	if (m_gObject == 0) { //Nodo Intermedio
+		for(auto & theChild : m_children){
+			theChild->updateWC();
 		}
 	}
+	updateBB();
 
 	/* =================== END YOUR CODE HERE ====================== */
 }
@@ -392,6 +406,7 @@ void Node::updateWC() {
 void Node::updateGS() {
 	/* =================== PUT YOUR CODE HERE ====================== */
 	updateWC();
+	propagateBBRoot();
 	/* =================== END YOUR CODE HERE ====================== */
 }
 
@@ -490,8 +505,18 @@ void Node::frustumCull(Camera *cam) {
 const Node *Node::checkCollision(const BSphere *bsph) const {
 	if (!m_checkCollision) return 0;
 	/* =================== PUT YOUR CODE HERE ====================== */
-
-	return 0; /* No collision */
+	int valor;
+	const Node* aux;
+	valor = BSphereBBoxIntersect(bsph, this->m_containerWC);
+	if(valor==IINTERSECT){
+		for(auto & theChild : this->m_children){
+			aux= theChild->checkCollision(bsph);
+			if(aux !=0){
+				return aux; 
+			}
+		}
+	}
+	return 0;
    /* =================== END YOUR CODE HERE ====================== */
 }
 

@@ -41,12 +41,17 @@ bool Avatar::getWalkorFly() const {
 
 bool Avatar::advance(float step) {
 
-	Node *rootNode = Scene::instance()->rootNode();
-	/* =================== PUT YOUR CODE HERE ====================== */
+    Node *rootNode = Scene::instance()->rootNode();
+    /* =================== PUT YOUR CODE HERE ====================== */
 
-	/* =================== END YOUR CODE HERE ====================== */
-	// no collision
-	return true;
+    if (m_walk)
+        m_cam->walk(step);
+    else
+        m_cam->fly(step);
+
+    /* =================== END YOUR CODE HERE ====================== */
+    // no collision
+    return true;
 }
 
 void Avatar::leftRight(float angle) {
