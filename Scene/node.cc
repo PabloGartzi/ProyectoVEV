@@ -507,12 +507,20 @@ const Node *Node::checkCollision(const BSphere *bsph) const {
 	/* =================== PUT YOUR CODE HERE ====================== */
 	int valor;
 	const Node* aux;
-	valor = BSphereBBoxIntersect(bsph, this->m_containerWC);
-	if(valor==IINTERSECT){
-		for(auto & theChild : this->m_children){
-			aux= theChild->checkCollision(bsph);
-			if(aux !=0){
-				return aux; 
+	if(m_gObject){
+		valor = BSphereBBoxIntersect(bsph, this->m_containerWC);
+		if(valor==IINTERSECT){
+			return this;
+		}
+	}
+	else{
+		valor = BSphereBBoxIntersect(bsph, this->m_containerWC);
+		if(valor==IINTERSECT){
+			for(auto & theChild : m_children){
+				aux = theChild->checkCollision(bsph);
+				if(aux !=0 ){
+					return aux;
+				}
 			}
 		}
 	}

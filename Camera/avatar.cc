@@ -43,15 +43,27 @@ bool Avatar::advance(float step) {
 
     Node *rootNode = Scene::instance()->rootNode();
     /* =================== PUT YOUR CODE HERE ====================== */
-
+	bool advance=false;
+   
     if (m_walk)
         m_cam->walk(step);
     else
         m_cam->fly(step);
+	
+	advance = true;
+
+	if(rootNode->checkCollision(m_bsph)){
+		advance = false;
+	    
+		if (m_walk)
+        	m_cam->walk(-step);
+		else
+        	m_cam->fly(-step);
+	}
 
     /* =================== END YOUR CODE HERE ====================== */
     // no collision
-    return true;
+    return advance;
 }
 
 void Avatar::leftRight(float angle) {
