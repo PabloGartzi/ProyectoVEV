@@ -407,7 +407,7 @@ void Node::updateGS() {
 	/* =================== PUT YOUR CODE HERE ====================== */
 	updateWC();
 	if(this->m_parent!=0){
-		propagateBBRoot();
+		this->m_parent->propagateBBRoot();
 	}
 	/* =================== END YOUR CODE HERE ====================== */
 }
