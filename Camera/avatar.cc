@@ -45,21 +45,25 @@ bool Avatar::advance(float step) {
     /* =================== PUT YOUR CODE HERE ====================== */
 	bool advance=false;
    
-    if (m_walk)
+    if (m_walk){
         m_cam->walk(step);
-    else
+	}
+    else{
         m_cam->fly(step);
-	
+	}
 	advance = true;
-
+	this->m_bsph->m_centre = this->m_cam->getPosition();
+	
 	if(rootNode->checkCollision(m_bsph)){
 		advance = false;
-	    
-		if (m_walk)
+		if (m_walk){
         	m_cam->walk(-step);
-		else
+		}
+		else{
         	m_cam->fly(-step);
-	}
+		}
+		this->m_bsph->m_centre = this->m_cam->getPosition();
+	}	
 
     /* =================== END YOUR CODE HERE ====================== */
     // no collision

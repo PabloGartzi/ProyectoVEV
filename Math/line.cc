@@ -29,7 +29,9 @@ void Line::setFromAtoB(const Vector3 & A, const Vector3 & B) {
 	float mi_modulo = m_d.length();
 	if (mi_modulo < Constants::distance_epsilon) //Es necesario hacer esto antes de normalizar.
 		printf("Oye... estan muy cerca\n");
-	m_d.normalize();
+	else{
+		m_d.normalize();
+	}
 	/* =================== END YOUR CODE HERE ====================== */
 
 }
@@ -54,15 +56,15 @@ float Line::paramDistance(const Vector3 & P) const {
 	float DoD = m_d.dot(m_d);
 	if(DoD < Constants::distance_epsilon){
 		printf("Oye, que es 0\n");
-		return 0;
+		return res;
 	}
 	else{
 		float numerador = m_d.dot(P-m_O);
 		float denominador = m_d.dot(m_d);
-		return numerador / denominador;
+		res = numerador / denominador;
+		return res;
 	}
 	/* =================== END YOUR CODE HERE ====================== */
-	return res;
 }
 
 // @@ TODO: Calculate the minimum distance 'dist' from line to P

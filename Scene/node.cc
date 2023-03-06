@@ -378,7 +378,7 @@ void Node::updateBB () {
 void Node::updateWC() {
 	/* =================== PUT YOUR CODE HERE ====================== */
     if(m_parent==0){
-	this->m_placementWC->clone(m_placement);
+		this->m_placementWC->clone(m_placement);
 	}
     // Actualizar los hijos recursivamente
 	else{
@@ -406,7 +406,9 @@ void Node::updateWC() {
 void Node::updateGS() {
 	/* =================== PUT YOUR CODE HERE ====================== */
 	updateWC();
-	propagateBBRoot();
+	if(this->m_parent!=0){
+		propagateBBRoot();
+	}
 	/* =================== END YOUR CODE HERE ====================== */
 }
 
