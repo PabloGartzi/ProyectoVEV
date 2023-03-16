@@ -33,5 +33,26 @@ varying vec4 f_color;
 varying vec2 f_texCoord;
 
 void main() {
+	
+	vec3 L; 
+	vec4 posEye4;
+	vec4 normalEye4;
+
+	//Pasar la posicion del vertice del sistema de coordenadas del modelo al sistema de coordenadas de la camara
+	posEye4 = modelToCameraMatrix * vec4(v_position, 1.0);
+
+	normalEye4 = modelToCameraMatrix * vec4(v_normal, 0.0);
+
+	vec3 normalEye = normalize(normalEye4.xyz);
+
+	for(int i=0; i<active_lights_n; i++){
+		if (theLights[i].position.w == 0.0){
+			//Direccional
+			L= normalize(-theLights[i].position.xyz);
+		} else{
+			//Posicional o spotlight
+			L= normalize(theLights[i].position.xyz - posEye4.xyz);
+		}
+	}
 	gl_Position = modelToClipMatrix * vec4(v_position, 1);
 }

@@ -201,6 +201,13 @@ public:
 	 */
 	bool getBBoxDraw() const;
 
+	///////////////////////////////
+	// Funciones para el ejemplo del shader de animacion
+	///////////////////////////////
+	float getSc() const;
+	void setSc(float v);
+
+
 	void print() const;
 
 private:
@@ -244,4 +251,8 @@ private:
 	// SkyBox
 
 	Node *m_skybox;
+
+	////////////////////////////
+	//Variable para el ejemplo del shader de animacion
+	float m_sc;
 };

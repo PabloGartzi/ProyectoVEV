@@ -495,6 +495,10 @@ void idle(void) {
 }
 
 void animate(int value) {
+	static float t = 0.0;
+	static float inc_t = 0.1;
+
+
 	// Set up the next timer tick (do this first)
 	glutTimerFunc(MG_TIMERMSECS, animate, 0);
 
@@ -506,7 +510,8 @@ void animate(int value) {
 	// ##### REPLACE WITH YOUR OWN GAME/APP MAIN CODE HERE #####
 	if (runAnimation) {
 		// Force a redisplay to render the new image
-
+		t= t+ inc_t;
+		RenderState::instance()->setSc(t);
 		glutPostRedisplay();
 	}
 	// ##### END OF GAME/APP MAIN CODE #####
