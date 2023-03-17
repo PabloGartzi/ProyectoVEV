@@ -89,16 +89,16 @@ void Light::placeScene(const Trfm3D & view, const Trfm3D & model) {
 
 	/* =================== PUT YOUR CODE HERE ====================== */
 	if(m_type == directional){
-		m_positionEye = modelView.transformVector(m_position.normalize());
+		m_positionEye = modelView.transformVector(m_position);
+		m_positionEye = m_positionEye.normalize();
 	}
 	else{
 		m_positionEye = modelView.transformPoint(m_position);
 	}
 	
-	modelView = view * model; //resetear modelview
-
 	if(m_type==spotlight){
 		m_spotDirectionEye= modelView.transformVector(m_spotDirection);
+		m_spotDirectionEye= m_spotDirectionEye.normalize();
 	}
 	/* =================== END YOUR CODE HERE ====================== */
 }

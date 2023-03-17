@@ -32,15 +32,38 @@ attribute vec2 v_texCoord;
 varying vec4 f_color;
 varying vec2 f_texCoord;
 
+
+
+//Calcular el color
+float lambertFactor (in vec3 N, in vec3 L){
+	float NoL = dot(N, L);
+	NoL = max(NoL, 0.0);
+	return NoL;
+}
+/*
+Otra forma de hacerlo
+void lamberFactor (in vec3 N, in vec3 L, out float Nol){
+	NoL  max(dot(N, L), 0.0);
+}
+*/
+/*
+void sumaPonderada(in vec3 v1, in vec3 v2, in float factor, inout vec3 suma){
+	suma += (v1+v2)*factor
+}
+*/
+
+
 void main() {
 	
 	vec3 L; 
 	vec4 posEye4;
 	vec4 normalEye4;
+	vec3 difuso = vec3(0.0);
 
 	//Pasar la posicion del vertice del sistema de coordenadas del modelo al sistema de coordenadas de la camara
 	posEye4 = modelToCameraMatrix * vec4(v_position, 1.0);
 
+	//Pasar vector normal del vertice del sistema de coordenadas del objeto al sistema de coordenadas de la camara
 	normalEye4 = modelToCameraMatrix * vec4(v_normal, 0.0);
 
 	vec3 normalEye = normalize(normalEye4.xyz);
@@ -53,6 +76,16 @@ void main() {
 			//Posicional o spotlight
 			L= normalize(theLights[i].position.xyz - posEye4.xyz);
 		}
+		
+		difuso += lambertFactor(normalEye,L)*theMaterial.diffuse*theLights[i].diffuse;
+		
 	}
+	
+	f_color = vec4(scene_ambient + difuso, 1.0);
+		
+	f_texCoord = v_texCoord;
+
+
+
 	gl_Position = modelToClipMatrix * vec4(v_position, 1);
 }
