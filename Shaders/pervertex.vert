@@ -36,6 +36,7 @@ varying vec2 f_texCoord;
 
 //Calcular el color
 float lambertFactor (in vec3 N, in vec3 L){
+//Multiplica el vector normal de la cara con el vector de la luza para obtener la irradiancia sobre la cara
 	float NoL = dot(N, L);
 	NoL = max(NoL, 0.0);
 	return NoL;
@@ -59,19 +60,35 @@ void main() {
 	vec4 posEye4;
 	vec4 normalEye4;
 	vec3 difuso = vec3(0.0);
+	vec3 especular = vec3(0.0); 
+
+	vec4 v4;
 
 	//Pasar la posicion del vertice del sistema de coordenadas del modelo al sistema de coordenadas de la camara
 	posEye4 = modelToCameraMatrix * vec4(v_position, 1.0);
 
-	//Pasar vector normal del vertice del sistema de coordenadas del objeto al sistema de coordenadas de la camara
+	//Pasar vector normal de la cara del sistema de coordenadas del objeto al sistema de coordenadas de la camara
 	normalEye4 = modelToCameraMatrix * vec4(v_normal, 0.0);
 
 	vec3 normalEye = normalize(normalEye4.xyz);
+
+	v4 = (0,0,0,1) - posEye4;
+	vec3 V = normalize(v4.xyz);
+	vec3 R;
+	float aux;
 
 	for(int i=0; i<active_lights_n; i++){
 		if (theLights[i].position.w == 0.0){
 			//Direccional
 			L= normalize(-theLights[i].position.xyz);
+			R=2*(normalEye*L)*normalEye-L;
+			R= normalize(R);
+			aux = dot(R,V);
+
+			if(aux > 0.0){
+			especular = especular + pow(aux, theLights[i].exponent);
+			}
+
 		} else{
 			//Posicional o spotlight
 			L= normalize(theLights[i].position.xyz - posEye4.xyz);
@@ -81,7 +98,7 @@ void main() {
 		
 	}
 	
-	f_color = vec4(scene_ambient + difuso, 1.0);
+	f_color = vec4(scene_ambient + difuso+especular*difuso, 1.0);
 		
 	f_texCoord = v_texCoord;
 
