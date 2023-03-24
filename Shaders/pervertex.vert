@@ -81,12 +81,12 @@ void main() {
 		if (theLights[i].position.w == 0.0){
 			//Direccional
 			L= normalize(-theLights[i].position.xyz);
-			R=2*(normalEye*L)*normalEye-L;
+			R=(2*dot(normalEye,L))*normalEye-L;
 			R= normalize(R);
 			aux = dot(R,V);
 
 			if(aux > 0.0){
-			especular = especular + pow(aux, theLights[i].exponent);
+			especular = especular + lambertFactor(normalEye,L)*pow(aux, theMaterial.shininess)*theMaterial.specular*theLights[i].specular;
 			}
 
 		} else{
@@ -98,11 +98,9 @@ void main() {
 		
 	}
 	
-	f_color = vec4(scene_ambient + difuso+especular*difuso, 1.0);
+	f_color = vec4(scene_ambient + difuso + especular, 1.0);
 		
 	f_texCoord = v_texCoord;
-
-
 
 	gl_Position = modelToClipMatrix * vec4(v_position, 1);
 }
