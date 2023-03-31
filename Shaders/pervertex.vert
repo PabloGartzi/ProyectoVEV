@@ -54,6 +54,8 @@ void sumaPonderada(in vec3 v1, in vec3 v2, in float factor, inout vec3 suma){
 */
 
 
+
+
 void main() {
 	
 	vec3 L; 
@@ -61,7 +63,7 @@ void main() {
 	vec4 normalEye4;
 	vec3 difuso = vec3(0.0);
 	vec3 especular = vec3(0.0); 
-
+	float aconst, alin, aquad, fdist = 0;
 	vec4 v4;
 
 	//Pasar la posicion del vertice del sistema de coordenadas del modelo al sistema de coordenadas de la camara
@@ -76,26 +78,70 @@ void main() {
 	vec3 V = normalize(v4.xyz);
 	vec3 R;
 	float aux;
+	float distancia;
 
 	for(int i=0; i<active_lights_n; i++){
 		if (theLights[i].position.w == 0.0){
 			//Direccional
-			L= normalize(-theLights[i].position.xyz);
-			R=(2*dot(normalEye,L))*normalEye-L;
+			L= -theLights[i].position.xyz;
+			L= normalize(L);
+					
+			difuso += lambertFactor(normalEye,L)*theMaterial.diffuse*theLights[i].diffuse; //DIFUSO
+
+			R=(2*dot(normalEye,L))*normalEye-L; //ESPECULAR
 			R= normalize(R);
 			aux = dot(R,V);
-
 			if(aux > 0.0){
 			especular = especular + lambertFactor(normalEye,L)*pow(aux, theMaterial.shininess)*theMaterial.specular*theLights[i].specular;
 			}
 
 		} else{
 			//Posicional o spotlight
-			L= normalize(theLights[i].position.xyz - posEye4.xyz);
+			L= theLights[i].position.xyz - posEye4.xyz;
+			distancia = length(L);
+			L= normalize(L);
+			
+			aconst = theLights[i].attenuation[0]; //ATENUACION
+			alin = theLights[i].attenuation[1];
+			aquad = theLights[i].attenuation[2];
+			if(aconst + alin*(distancia) + aquad*(distancia*distancia) > 1){
+			fdist = 1.0 /(aconst + alin*(distancia) + aquad*(distancia*distancia));
+			}
+			if (theLights[i].cosCutOff > 0.0){
+				vec3 D = normalize(theLights[i].spotDir);
+
+				float spot_cos = max(0.0, dot(-L, D)); // spot_cos no puede ser negativo
+				float spot_factor = 0.0;
+				if (spot_cos >= theLights[i].cosCutOff) { // está dentro?
+					spot_factor = pow(spot_cos, theLights[i].exponent);
+				}
+
+				if (spot_factor > 0.0) {
+					difuso += lambertFactor(normalEye,L)*theMaterial.diffuse*theLights[i].diffuse*fdist; //DIFUSO
+
+					R=(2*dot(normalEye,L))*normalEye-L; //ESPECULAR
+					R= normalize(R);
+					aux = dot(R,V);
+					if(aux > 0.0){
+						if (theLights[i].cosCutOff > 0.0){
+							especular = especular + lambertFactor(normalEye,L)*pow(aux, theMaterial.shininess)*theMaterial.specular*theLights[i].specular*fdist;
+						}
+					}
+				}
+			}
+			else{
+				difuso += lambertFactor(normalEye,L)*theMaterial.diffuse*theLights[i].diffuse*fdist; //DIFUSO
+
+				R=(2*dot(normalEye,L))*normalEye-L; //ESPECULAR
+				R= normalize(R);
+				aux = dot(R,V);
+				if(aux > 0.0){
+					if (theLights[i].cosCutOff > 0.0){
+						especular = especular + lambertFactor(normalEye,L)*pow(aux, theMaterial.shininess)*theMaterial.specular*theLights[i].specular*fdist;
+					}
+				}
+			}
 		}
-		
-		difuso += lambertFactor(normalEye,L)*theMaterial.diffuse*theLights[i].diffuse;
-		
 	}
 	
 	f_color = vec4(scene_ambient + difuso + especular, 1.0);
