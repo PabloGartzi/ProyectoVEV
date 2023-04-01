@@ -117,14 +117,14 @@ void main() {
 				}
 
 				if (spot_factor > 0.0) {
-					difuso += lambertFactor(normalEye,L)*theMaterial.diffuse*theLights[i].diffuse*fdist; //DIFUSO
+					difuso += lambertFactor(normalEye,L)*theMaterial.diffuse*theLights[i].diffuse*fdist*spot_factor; //DIFUSO
 
 					R=(2*dot(normalEye,L))*normalEye-L; //ESPECULAR
 					R= normalize(R);
 					aux = dot(R,V);
 					if(aux > 0.0){
 						if (theLights[i].cosCutOff > 0.0){
-							especular = especular + lambertFactor(normalEye,L)*pow(aux, theMaterial.shininess)*theMaterial.specular*theLights[i].specular*fdist;
+							especular = especular + lambertFactor(normalEye,L)*pow(aux, theMaterial.shininess)*theMaterial.specular*theLights[i].specular*fdist*spot_factor;
 						}
 					}
 				}
