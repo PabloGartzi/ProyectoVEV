@@ -53,9 +53,6 @@ void sumaPonderada(in vec3 v1, in vec3 v2, in float factor, inout vec3 suma){
 }
 */
 
-
-
-
 void main() {
 	
 	vec3 L; 
@@ -63,7 +60,9 @@ void main() {
 	vec4 normalEye4;
 	vec3 difuso = vec3(0.0);
 	vec3 especular = vec3(0.0); 
-	float aconst, alin, aquad, fdist = 0;
+
+
+	float aconst, alin, aquad, fdist, aux, distancia= 0;
 	vec4 v4;
 
 	//Pasar la posicion del vertice del sistema de coordenadas del modelo al sistema de coordenadas de la camara
@@ -77,12 +76,9 @@ void main() {
 	v4 = (0,0,0,1) - posEye4;
 	vec3 V = normalize(v4.xyz);
 	vec3 R;
-	float aux;
-	float distancia;
 
 	for(int i=0; i<active_lights_n; i++){
-		if (theLights[i].position.w == 0.0){
-			//Direccional
+		if (theLights[i].position.w == 0.0){			//DIRECCIONAL
 			L= -theLights[i].position.xyz;
 			L= normalize(L);
 					
@@ -95,19 +91,24 @@ void main() {
 			especular = especular + lambertFactor(normalEye,L)*pow(aux, theMaterial.shininess)*theMaterial.specular*theLights[i].specular;
 			}
 
-		} else{
-			//Posicional o spotlight
+		}
+		else{											//SPOTLIGHT O POSICIONAL
 			L= theLights[i].position.xyz - posEye4.xyz;
 			distancia = length(L);
 			L= normalize(L);
 			
-			aconst = theLights[i].attenuation[0]; //ATENUACION
+			//ATENUACION
+			aconst = theLights[i].attenuation[0]; 		
 			alin = theLights[i].attenuation[1];
 			aquad = theLights[i].attenuation[2];
 			if(aconst + alin*(distancia) + aquad*(distancia*distancia) > 1){
-			fdist = 1.0 /(aconst + alin*(distancia) + aquad*(distancia*distancia));
+				fdist = 1.0 /(aconst + alin*(distancia) + aquad*(distancia*distancia));
 			}
-			if (theLights[i].cosCutOff > 0.0){
+			else{
+				fdist = 1.0;
+			}
+
+			if (theLights[i].cosCutOff > 0.0){			//SPOTLIGHT
 				vec3 D = normalize(theLights[i].spotDir);
 
 				float spot_cos = max(0.0, dot(-L, D)); // spot_cos no puede ser negativo
@@ -129,7 +130,7 @@ void main() {
 					}
 				}
 			}
-			else{
+			else{									//POSICIONAL
 				difuso += lambertFactor(normalEye,L)*theMaterial.diffuse*theLights[i].diffuse*fdist; //DIFUSO
 
 				R=(2*dot(normalEye,L))*normalEye-L; //ESPECULAR
