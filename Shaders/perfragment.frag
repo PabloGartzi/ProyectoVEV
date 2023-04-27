@@ -46,13 +46,13 @@ void main() {
 	float aconst, alin, aquad, fdist, aux, distancia= 0;
 	vec4 v4;
 
-	posEye4 = modelToCameraMatrix * vec4(v_position, 1.0);
+	posEye4 = vec4(f_position,1.0);
 
-	normalEye4 = modelToCameraMatrix * vec4(v_normal, 0.0);
+	normalEye4 = vec4(normalize(f_normal),1.0);
 
 	vec3 normalEye = normalize(normalEye4.xyz);
 
-	v4 = (0,0,0,1) - posEye4;
+	v4 = vec4(normalize(f_viewDirection),1.0);
 	vec3 V = normalize(v4.xyz);
 	vec3 R;
 
@@ -80,7 +80,7 @@ void main() {
 			aconst = theLights[i].attenuation[0]; 		
 			alin = theLights[i].attenuation[1];
 			aquad = theLights[i].attenuation[2];
-			if(aconst + alin*(distancia) + aquad*(distancia*distancia) > 1){
+			if(aconst + alin*(distancia) + aquad*(distancia*distancia) > 0.0){
 				fdist = 1.0 /(aconst + alin*(distancia) + aquad*(distancia*distancia));
 			}
 			else{
@@ -124,8 +124,7 @@ void main() {
 		}
 	}
 			
-	f_texCoord = v_texCoord;
-	
+	vec4 color_textura = texture2D(texture0, f_texCoord);
 	gl_FragColor = vec4(scene_ambient + difuso + especular, 1.0)*color_textura;
 }
 
