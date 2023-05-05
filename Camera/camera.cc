@@ -313,7 +313,15 @@ int Camera::checkFrustum(const BBox *theBBox,
 						 unsigned int *planesBitM) {
 	int res = -1; // by default, BBOX fully inside
 	/* =================== PUT YOUR CODE HERE ====================== */
-
+	int interseca;
+	//en el bucle comprobamos si el bounding box esta fuera de algun plano
+	for (int i = 0; i < MAX_CLIP_PLANES; i=i+1) {
+		interseca = BBoxPlaneIntersect(theBBox, m_fPlanes[i]);
+		if (interseca == IREJECT){
+			return 1; // El bounding box esta fuera del volumen de vision
+		}
+		if (interseca == IINTERSECT) res = 0; // El bounding box interseca con el volumen de vision
+	}
 	/* =================== END YOUR CODE HERE ====================== */
 	return res; // BBox is fully inside the frustum
 }

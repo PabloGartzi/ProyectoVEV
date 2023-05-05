@@ -489,7 +489,19 @@ void Node::setCulled(bool culled) {
 
 void Node::frustumCull(Camera *cam) {
 	/* =================== PUT YOUR CODE HERE ====================== */
-
+	int frustum = cam->checkFrustum(m_containerWC, 0);
+	if (frustum == -1) {
+		this->setCulled(false);
+	} 
+	else if (frustum == 0) {
+		m_isCulled = false;
+		for (auto theChild : m_children) {
+			theChild->frustumCull(cam);
+		}
+	} 
+	else {
+		this->setCulled(true);
+	}
 	/* =================== END YOUR CODE HERE ====================== */
 }
 
