@@ -496,7 +496,7 @@ void idle(void) {
 
 void animate(int value) {
 	static float t = 0.0;
-	static float inc_t = 0.1;
+	static float inc_t = 0.01;
 
 
 	// Set up the next timer tick (do this first)

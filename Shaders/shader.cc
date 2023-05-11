@@ -266,6 +266,22 @@ void ShaderProgram::beforeDraw() {
 				this->send_uniform("bumpmap", Constants::gl_texunits::bump);
 			}
 		}
+		if (this->has_capability("multitex")) {
+			tex = mat->getTexture(1);
+			if (tex != 0) {
+				tex->bindGLUnit(Constants::gl_texunits::rest);
+				this->send_uniform("texture1", Constants::gl_texunits::rest);
+				this->send_uniform("uCloudOffset", rs->getSc()); //la estoy reusando 
+			}
+		}
+		
+		if (has_capability("specmap")) {
+			tex = mat->getSpecularMap();
+			if (tex != 0) {
+				tex->bindGLUnit(Constants::gl_texunits::specular);
+				this->send_uniform("specmap", Constants::gl_texunits::specular);
+			}
+		}
 	}
 }
 
